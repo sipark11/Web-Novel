@@ -1,0 +1,27 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "profiles": { "$uid": { ".read": true, ".write": "auth != null && auth.uid === $uid" } },
+    "stories": {
+      ".read": true,
+      ".indexOn": ["createdAt", "genre", "authorUid"],
+      "$storyId": {
+        ".write": "auth != null && ((!data.exists() && newData.child('authorUid').val() === auth.uid) || data.child('authorUid').val() === auth.uid)",
+        "episodes": {
+          "$episodeId": {
+            ".write": "auth != null && root.child('stories').child($storyId).child('authorUid').val() === auth.uid",
+            "comments": {
+              "$commentId": {
+                ".write": "auth != null && !data.exists() && newData.child('authorUid').val() === auth.uid"
+              }
+            }
+          }
+        }
+      }
+    },
+    "storyLikes": { "$storyId": { ".read": true, "$uid": { ".write": "auth != null && auth.uid === $uid" } } },
+    "libraries": { "$uid": { ".read": "auth != null && auth.uid === $uid", ".write": "auth != null && auth.uid === $uid" } },
+    "follows": { "$uid": { ".read": true, ".write": "auth != null && auth.uid === $uid" } }
+  }
+}
